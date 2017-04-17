@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baobaotao.Dao.StudentDao">
+    <resultMap id="User" type="com.baobaotao.domain.Student">
+        <id property="stu_id" column="stu_id" jdbcType="VARCHAR"/>
+        <result property="name" column="stu_name" jdbcType="VARCHAR"/>
+        <result property="age" column="stu_age" jdbcType="VARCHAR"/>
+        <result column="stu_mon" property="money" jdbcType="INTEGER"/>
+    </resultMap>
+    
+     <resultMap id="StudentArticleList" type="com.baobaotao.domain.Artical">
+        <id property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        
+        <association property="stu"  resultMap="User">
+            <id property="stu_id" column="stu_id" jdbcType="VARCHAR"/>
+	        <result property="name" column="stu_name" jdbcType="VARCHAR"/>
+	        <result property="age" column="stu_age" jdbcType="VARCHAR"/>
+	        <result column="stu_mon" property="money" jdbcType="INTEGER"/>        
+        </association>        
+    </resultMap>
+
+    <select id="getStudent" resultMap="User" >
+        SELECT *FROM student WHERE stu_id=#{id}
+    </select>
+    <!-- 获取所有学生 -->
+     <select id="getAllStudent" resultMap="User" >
+        SELECT *FROM student 
+    </select>
+    
+    <select id="getStudentArticals"  resultMap="StudentArticleList">
+       select student.stu_id,student.stu_name,student.stu_age,student.stu_mon,article.id,article.title,article.stuid,article.content from student,article
+              where stu_id=article.stuid and stu_id=#{id}
+    </select>
+     <select id="getSomeArticals" parameterType="hashmap" resultMap="StudentArticleList">
+       select student.stu_id,student.stu_name,student.stu_age,student.stu_mon,article.id,article.title,article.stuid,article.content from student,article
+              where stu_id=article.stuid 
+              
+              <if test="stuid!=null and departmentId!=''">  
+                and stu_id=#{stuid}
+              </if>  
+    </select>
+    
+    
+    <!-- 添加学生 -->
+     <insert id="insertStudent" parameterType="com.baobaotao.domain.Student" 
+        useGeneratedKeys="true" keyProperty="id"> 
+        insert into student(stu_id,stu_name,stu_age,stu_mon)  
+             values(#{stu_id},#{name},#{age},#{money})  
+    </insert>
+    <delete id="deleteStudent" parameterType="int">
+        delete from student where stu_id=#{id}
+    </delete>
+    
+    <update id="updateStudent" parameterType="com.baobaotao.domain.Student" >
+        update student set stu_id=#{stu_id},stu_name=#{name},stu_age=#{age},stu_mon=#{money} where stu_id=#{stu_id}
+    </update>
+
+</mapper>
